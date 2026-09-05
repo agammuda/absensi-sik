@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Absensi NFC - SIK Imam An-Nawawi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+      background: #f0f4f7;
+      color: #1f2937;
+    }
+    .header {
+      background: linear-gradient(135deg,#07553d,#12805f);
+      color: white;
+      text-align: center;
+      padding: 35px 20px 25px;
+    }
+    .logo-capsule-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 18px;
+      width: 100%;
+    }
+    .logo-capsule {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: #ffffff;
+      padding: 12px 32px;
+      border-radius: 9999px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.22);
+      max-width: 95%;
+    }
+    .logo-item {
+      height: 55px;
+      width: 55px;
+      object-fit: contain;
+    }
+    .header h1 {
+      margin: 10px 0 4px;
+      font-size: 24px;
+      letter-spacing: 0.5px;
+    }
+    .header p {
+      margin: 0;
+      opacity: .92;
+      font-size: 14px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 0 16px;
+    }
+    .card {
+      background: white;
+      padding: 28px 24px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.06);
+    }
+    .title {
+      text-align: center;
+      color: #07553d;
+      margin-bottom: 24px;
+    }
+    .title h2 { margin: 0 0 6px; font-size: 22px; }
+    .title p { color: #64748b; font-size: 14px; margin: 0; }
+    
+    .btn-main {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #12805f, #0b684c);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(18, 128, 95, 0.3);
+      transition: transform 0.15s, opacity 0.2s;
+      margin-bottom: 12px;
+    }
+    .btn-main:hover { opacity: .95; transform: translateY(-1px); }
+    
+    .scanner-box {
+      border: 2px dashed #cbd5e1;
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 30px 20px;
+      text-align: center;
+      margin-top: 15px;
+    }
+    .scanner-box h3 { color: #07553d; margin-top: 0; }
+    
+    .result-box {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #f0fdf4;
+      border: 1px solid #dcfce7;
+      display: none;
+    }
+    .result-box.error {
+      background: #fef2f2;
+      border-color: #fee2e2;
+      color: #b91c1c;
+    }
+    .footer {
+      margin-top: 35px;
+      padding: 20px;
+      background: #07553d;
+      color: white;
+      text-align: center;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo-capsule-wrapper">
+      <div class="logo-capsule">
+        <img class="logo-item" src="https://lh3.googleusercontent.com/d/158lufttqk7fOXWe39ysZMsWMX7UBgauv" alt="RA-K">
+        <img class="logo-item" src="https://lh3.googleusercontent.com/d/1jM3T-OiGzHmER7GMhN18PJb4xNNVQgmt" alt="MI-K">
+        <img class="logo-item" src="https://lh3.googleusercontent.com/d/1TT1ei3upWmq_XDZkRjV1iLOMmgEYoZK2" alt="YYS">
+        <img class="logo-item" src="https://lh3.googleusercontent.com/d/1xjrlVQNfzqV3qQCF4Oo6gEwuUJiXKom6" alt="MTs-K">
+        <img class="logo-item" src="https://lh3.googleusercontent.com/d/1FzSia0Pj_-Q1YSEC7QJKNnyGcJUJ5DKX" alt="MA-K">
+      </div>
+    </div>
+    <h1>SIK IMAM AN NAWAWI</h1>
+    <p>Sistem Absensi & Layanan Digital Terpadu</p>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="title">
+        <h2>Terminal Absensi NFC</h2>
+        <p>Silakan aktifkan pemindai lalu tap kartu pada perangkat HP Android Anda.</p>
+      </div>
+
+      <button class="btn-main" onclick="aktifkanNFC()">📡 Aktifkan Sensor NFC</button>
+
+      <div class="scanner-box">
+        <h3>Status: Menunggu Tap Kartu...</h3>
+        <p style="font-size: 13px; color: #64748b; margin-bottom: 0;">Pastikan menggunakan Google Chrome di Android yang mendukung Web NFC.</p>
+      </div>
+
+      <div id="resultCard" class="result-box">
+        <h4 id="resTitle" style="margin: 0 0 6px 0;"></h4>
+        <p id="resDesc" style="margin: 0; font-size: 14px;"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <b>SIK IMAM AN NAWAWI</b><br>
+    Yayasan Al Islam Aceh © 2026
+  </div>
+
+  <script>
+    // URL Web App Google Apps Script Anda yang sudah terhubung ke database
+    var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygSX4cL1mReexdHRJvIce9KuCsCESZT1nymMoBAiuFhd81oxQ2YxB1GPaVRcjAqNk/exec";
+
+    async function aktifkanNFC() {
+      if (!("NDEFReader" in window)) {
+        tampilkanHasil("Error Browser", "Web NFC tidak didukung di peramban ini. Gunakan Google Chrome di Android.", true);
+        return;
+      }
+
+      try {
+        const ndef = new NDEFReader();
+        await ndef.scan();
+        tampilkanHasil("Sensor Aktif", "Silakan tempelkan kartu NFC / e-KTP / Kartu Pegawai di belakang HP Anda.", false);
+
+        ndef.onreading = event => {
+          const serialNumber = event.serialNumber; 
+          kirimAbsensiKeServer(serialNumber);
+        };
+      } catch (error) {
+        tampilkanHasil("Izin Ditolak", "Gagal menginisialisasi NFC: " + error.message, true);
+      }
+    }
+
+    function kirimAbsensiKeServer(uid) {
+      tampilkanHasil("Memproses...", "Membaca ID Kartu: " + uid, false);
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "absen", uid: uid, device: "PONSEL-NFC-01" }),
+        headers: { "Content-Type": "text/plain;charset=utf-8" }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          var namaKaryawan = data.karyawan ? data.karyawan.Nama : "Karyawan";
+          tampilkanHasil("✔ Absensi Berhasil", `${namaKaryawan} (${data.absensi.Jenis}) - Status: ${data.absensi.Status}`, false);
+        } else {
+          tampilkanHasil("❌ Gagal", data.message, true);
+        }
+      })
+      .catch(err => {
+        tampilkanHasil("Gangguan Koneksi", "Tidak dapat terhubung ke server database: " + err, true);
+      });
+    }
+
+    function tampilkanHasil(judul, pesan, isError) {
+      var box = document.getElementById("resultCard");
+      var title = document.getElementById("resTitle");
+      var desc = document.getElementById("resDesc");
+
+      box.style.display = "block";
+      if (isError) {
+        box.className = "result-box error";
+        title.style.color = "#b91c1c";
+      } else {
+        box.className = "result-box";
+        title.style.color = "#15803d";
+      }
+      title.innerText = judul;
+      desc.innerText = pesan;
+    }
+  </script>
+</body>
+</html>
